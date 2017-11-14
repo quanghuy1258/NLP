@@ -93,8 +93,9 @@ def sort_and_print(wordSet,nWords,wordCount):
 
 folders = ['thanhnien', 'nld', 'dantri']
 distinctWords = {} 
+nWords = 0
 for fd in folders:
     for fn in os.listdir(fd):
-        nWords = stat_one_file(fd+'/'+fn,distinctWords)
+        nWords += stat_one_file(fd+'/'+fn,distinctWords)
         print 'Finished with %s' % fd+'/'+fn
 sort_and_print(wordSet,nWords,distinctWords)
