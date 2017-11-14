@@ -13,5 +13,6 @@ def convertToUTF8(filename,encodings):
             f = open(filename,'w')
             f.write(codecs.encode(conv,'utf-8'))
             f.close()
+            return
         except:
             pass
