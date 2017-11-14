@@ -7,6 +7,9 @@ for i in range(91,97):
     delim.append(chr(i))
 for i in range(123,127):
     delim.append(chr(i))
+delim.append(codecs.decode('”','utf-8'))
+delim.append(codecs.decode('“','utf-8'))
+delim.append(codecs.decode('–','utf-8'))
 
 #Split unicode strings with multiple delimiters
 def uSplit(uString,delim):
