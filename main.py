@@ -28,6 +28,7 @@ for i in range(123,127):
     delim.append(chr(i))
 delim.append(codecs.decode('”','utf-8'))
 delim.append(codecs.decode('“','utf-8'))
+delim.append(codecs.decode('–','utf-8'))
     
 def uSplit(uString,delim):
     uString = list(uString)
