@@ -1,3 +1,6 @@
+import codecs
+
+#list of delimiters
 delim = []
 
 #Get the list of numeric and special characters
