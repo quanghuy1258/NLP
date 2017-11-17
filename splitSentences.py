@@ -16,6 +16,7 @@ delim.append(codecs.decode('”','utf-8'))
 delim.append(codecs.decode('“','utf-8'))
 delim.append(codecs.decode('–','utf-8'))
 delim.append(codecs.decode('…','utf-8'))
+delim.append(codecs.decode('’','utf-8'))
 
 #split sentences
 def splitSentences(s,delim):
