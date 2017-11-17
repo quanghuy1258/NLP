@@ -2,13 +2,8 @@ import codecs
 import unicodedata
 from nltk.tokenize import sent_tokenize
 import re
-
-
 import os
 from operator import itemgetter
-
-
-
 
 encodings = ['ascii','utf-8','utf-16']
 
