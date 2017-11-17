@@ -1,18 +1,26 @@
-import os
 import codecs
+import unicodedata
+from nltk.tokenize import sent_tokenize
+import re
+
+
+import os
 from operator import itemgetter
+
+
+
 
 encodings = ['ascii','utf-8','utf-16']
 
-def convertToUTF8(filename,encodings):
+def normalizeTextFile(filename,encodings):
     f = open(filename,'r')
     data = f.read()
     f.close()
     for e in encodings:
         try:
             conv = codecs.decode(data,e)
-            print filename + ' with encoding ' + e
             f = open(filename,'w')
+            conv = unicodedata.normalize('NFC',conv)
             f.write(codecs.encode(conv,'utf-8'))
             f.close()
             return
@@ -20,23 +28,31 @@ def convertToUTF8(filename,encodings):
             pass
 
 delim = []
+
 for i in range(65):
-    delim.append(chr(i))
+    delim.append(codecs.decode(chr(i),'utf-8'))
 for i in range(91,97):
-    delim.append(chr(i))
+    delim.append(codecs.decode(chr(i),'utf-8'))
 for i in range(123,127):
-    delim.append(chr(i))
+    delim.append(codecs.decode(chr(i),'utf-8'))
 delim.append(codecs.decode('”','utf-8'))
 delim.append(codecs.decode('“','utf-8'))
 delim.append(codecs.decode('–','utf-8'))
-    
-def uSplit(uString,delim):
-    uString = list(uString)
-    for i in range(len(uString)):
-        if uString[i] in delim:
-            uString[i] = ' '
-    uString = ''.join(uString)
-    return uString.split()
+
+def splitSentences(s,delim):
+    s = codecs.decode(s,'utf-8')
+    s = re.sub(codecs.decode('<br>','utf-8'),codecs.decode('. ','utf-8'),s)
+    sentences = sent_tokenize(s)
+    for i in range(len(sentences)):
+        sentences[i] = list(sentences[i])
+        for j in range(len(sentences[i])):
+            if sentences[i][j] in delim:
+               sentences[i][j] = codecs.decode(' ','utf-8')
+        sentences[i] = ''.join(sentences[i])
+        sentences[i] = sentences[i].strip()
+        sentences[i] = re.sub(codecs.decode(' +','utf-8'),codecs.decode(' ','utf-8'),sentences[i])
+        sentences[i] = sentences[i].lower()
+    return sentences
 
 wordSet = []
 f = open('wordfinal','r')
@@ -48,20 +64,20 @@ while l:
 f.close()
 
 def stat_one_file(filename,distinctWords):
-    convertToUTF8(filename,encodings)
+    normalizeTextFile(filename,encodings)
     f = open(filename, 'r')
     l = f.readline()
     nWords = 0
     while l: 
         if l[:9] == 'Content: ':
-            content = codecs.decode(l[9:],'utf-8').lower()
-            wordList = uSplit(content,delim)
-            for w in wordList:
-                nWords += 1
-                if w in distinctWords:
-                    distinctWords[w] += 1
-                else:
-                    distinctWords[w] = 1
+            sentences = splitSentences(l[9:],delim)
+            for s in sentences:
+                for w in s.split():
+                    nWords += 1
+                    if w in distinctWords:
+                        distinctWords[w] += 1
+                    else:
+                        distinctWords[w] = 1
         l = f.readline()
     f.close()
     return nWords
@@ -92,11 +108,12 @@ def sort_and_print(wordSet,nWords,wordCount):
     f.write('notInDict' + '\t' + str(x2)+'\n')
     f.close()
 
-folders = ['thanhnien', 'nld', 'dantri']
+folders = ['t']
 distinctWords = {} 
 nWords = 0
 for fd in folders:
     for fn in os.listdir(fd):
+        print 'Beginning with %s' % fd+'/'+fn
         nWords += stat_one_file(fd+'/'+fn,distinctWords)
         print 'Finished with %s' % fd+'/'+fn
 sort_and_print(wordSet,nWords,distinctWords)
